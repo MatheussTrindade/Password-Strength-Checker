@@ -13,7 +13,7 @@ body {
     padding: 30px;
     border-radius: 12px;
     width: 400px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .input-container input {
@@ -62,4 +62,27 @@ ul {
     border-radius: 10px;
     overflow: hidden;
     margin-top: 15px;
+}
+
+.signature a {
+    color: #22c55e;
+    text-decoration: none;
+}
+
+.signature a:hover {
+    text-decoration: underline;
+}
+
+.signature {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: 12px;
+    color: #64748b;
+    opacity: 0.7;
+    z-index: 999; /* garante que fica acima de tudo */
+}
+
+.signature:hover {
+    opacity: 1;
 }
