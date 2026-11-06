@@ -1,17 +1,27 @@
-from flask import Blueprint, render_template, request, jsonify
-from .checker import check_password_strength
+from flask import Blueprint, jsonify, render_template, request
 
-main = Blueprint('main', __name__)
+from .checker import analyze_password
 
-@main.route('/')
+MAX_PASSWORD_LENGTH = 256
+
+main = Blueprint("main", __name__)
+
+
+@main.get("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@main.route('/check', methods=['POST'])
+
+@main.post("/check")
 def check():
-    data = request.get_json()
-    password = data.get('password')
+    payload = request.get_json(silent=True) or {}
+    password = payload.get("password")
 
-    result = check_password_strength(password)
+    if not isinstance(password, str) or not password:
+        return jsonify(error="Envie o campo 'password' como texto não vazio."), 400
+    if len(password) > MAX_PASSWORD_LENGTH:
+        return jsonify(error=f"Limite de {MAX_PASSWORD_LENGTH} caracteres."), 400
 
-    return jsonify(result)
+    response = jsonify(analyze_password(password))
+    response.headers["Cache-Control"] = "no-store"
+    return response

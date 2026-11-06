@@ -1,36 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
-    <title>Cyber Password Tool</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Password Strength Checker</title>
+    <meta name="description" content="Análise de senhas com estimativa de entropia, detecção de padrões e consulta a vazamentos públicos.">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
+    <header class="topbar">
+        <a class="wordmark" href="/">pass<span>check</span></a>
+        <a class="topbar-link" href="https://github.com/MatheussTrindade/Password-Strength-Checker" target="_blank"
+            rel="noopener">Código-fonte ↗</a>
+    </header>
 
-    <div class="container">
-        <h1>🔐 Password Security Analyzer</h1>
+    <main class="layout">
+        <section class="intro" aria-labelledby="title">
+            <p class="eyebrow">Analisador de senhas</p>
+            <h1 id="title">Quanto tempo a sua senha aguenta?</h1>
+            <p class="lead">
+                Estimativa de entropia, detecção dos padrões que atacantes testam primeiro e consulta a
+                vazamentos públicos via k-anonymity. Nada é armazenado.
+            </p>
 
-        <div class="input-container">
-            <div class="password-field">
-                <input type="password" id="password" placeholder="Digite sua senha">
+            <div class="field">
+                <label class="field-label" for="password">Senha</label>
+                <div class="field-box">
+                    <input id="password" type="password" maxlength="256" placeholder="Digite ou gere uma senha"
+                        autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                    <button type="button" class="field-btn" id="toggle" aria-pressed="false"
+                        aria-controls="password">Mostrar</button>
+                </div>
+                <div class="field-actions">
+                    <button type="button" class="text-btn" id="generate">Gerar senha forte</button>
+                    <button type="button" class="text-btn" id="copy" hidden>Copiar</button>
+                </div>
             </div>
 
-        </div>
+            <div class="meter" id="meter" data-score="none">
+                <div class="meter-track" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="meter-meta" aria-live="polite">
+                    <strong id="verdict">Aguardando senha</strong>
+                    <span class="mono" id="entropy">0 bits</span>
+                </div>
+            </div>
 
-        <div class=" strength-container">
-            <div id="strength-bar"></div>
-        </div>
+            <ul class="checklist" id="checklist" aria-label="Critérios básicos">
+                <li data-rule="length">12+ caracteres</li>
+                <li data-rule="lower">Minúsculas</li>
+                <li data-rule="upper">Maiúsculas</li>
+                <li data-rule="digit">Números</li>
+                <li data-rule="symbol">Símbolos</li>
+            </ul>
+        </section>
 
-        <div id="result"></div>
-    </div>
+        <section class="report" id="report" data-state="empty" aria-label="Relatório da análise">
+            <article class="panel">
+                <header class="panel-head">
+                    <h2>Tempo estimado para quebrar</h2>
+                    <span class="panel-note">caso médio</span>
+                </header>
+                <dl class="crack-list">
+                    <div class="crack-row" data-scenario="online">
+                        <dt>Online, com limite de tentativas<small>10 tentativas por segundo</small></dt>
+                        <dd>—</dd>
+                    </div>
+                    <div class="crack-row" data-scenario="offline_slow">
+                        <dt>Vazamento com hash lento<small>bcrypt · 10 mil por segundo</small></dt>
+                        <dd>—</dd>
+                    </div>
+                    <div class="crack-row" data-scenario="offline_fast">
+                        <dt>Vazamento com hash rápido<small>MD5/SHA-1 em GPU · 10 bilhões por segundo</small></dt>
+                        <dd>—</dd>
+                    </div>
+                </dl>
+            </article>
 
-    <div class="signature">
-        Built by <a href="https://github.com/MatheussTrindade" target="_blank">
-            Matheus Trindade
-        </a>
-    </div>
-    <script src="/static/script.js"></script>
+            <article class="panel">
+                <header class="panel-head">
+                    <h2>Vazamentos conhecidos</h2>
+                    <span class="panel-note">Have I Been Pwned</span>
+                </header>
+                <p class="breach" id="breach" data-status="idle">Nenhuma consulta feita ainda.</p>
+            </article>
+
+            <article class="panel">
+                <header class="panel-head">
+                    <h2>Padrões detectados</h2>
+                </header>
+                <ul class="patterns" id="patterns">
+                    <li class="muted">—</li>
+                </ul>
+            </article>
+
+            <article class="panel">
+                <header class="panel-head">
+                    <h2>O que melhorar</h2>
+                </header>
+                <ol class="feedback" id="feedback">
+                    <li class="muted">—</li>
+                </ol>
+            </article>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <span>Feito por <a href="https://github.com/MatheussTrindade" target="_blank" rel="noopener">Matheus
+                Trindade</a></span>
+        <span>Senhas não são registradas nem armazenadas.</span>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </body>
 
 </html>
